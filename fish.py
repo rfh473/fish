@@ -2,7 +2,6 @@ import pyautogui, cv2, os, sys
 
 def main():
     FILE_DIRECTORY = 'C:\\Users\\ryanh\\Downloads'
-    # FILE_NAME = 'file_example_MP4_480_1_5MG.mp4'
     FILE_NAME = '4_by_3.mp4'
 
     FILE_PATH = FILE_DIRECTORY + '\\' + FILE_NAME
@@ -13,12 +12,17 @@ def main():
     UNDERSAMPLING_FACTOR = 4
     MAX_COORDINATES = pyautogui.size()
 
+    if not os.path.isfile(FILE_PATH):
+        print('ERROR: file not found ' + FILE_PATH)
+        return
+
     data = open(DATA_FILE_NAME, 'a+')
     summary = open(SUMMARY_FILE_NAME, 'a+')
 
     if os.path.getsize(DATA_FILE_NAME) > 0 or os.path.getsize(SUMMARY_FILE_NAME):
-        print('ERROR: data or summary files for ' + FILE_NAME + ' are already written to. move or remove these files')
-        return
+        print('WARN: data or summary files for ' + FILE_NAME + ' are already written to. move or remove these files')
+        data.write('\n')
+        summary.write('\n')
 
     vid = cv2.VideoCapture(FILE_PATH)
     cv2.namedWindow(WINDOW_NAME, cv2.WND_PROP_FULLSCREEN)
@@ -34,9 +38,8 @@ def main():
         if not ret:
             break
 
+        cv2.imshow(WINDOW_NAME, frame)
         if frame_index % UNDERSAMPLING_FACTOR == 0:
-            cv2.imshow(WINDOW_NAME, frame)
-
             x = pyautogui.position().x / MAX_COORDINATES.width
             y = pyautogui.position().y / MAX_COORDINATES.height
             x_coordinates.append(x)
