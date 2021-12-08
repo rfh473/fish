@@ -1,4 +1,4 @@
-import pyautogui, cv2, os
+import pyautogui, cv2, os, sys
 
 def main():
     FILE_DIRECTORY = 'C:\\Users\\ryanh\\Downloads'
@@ -13,12 +13,13 @@ def main():
     UNDERSAMPLING_FACTOR = 4
     MAX_COORDINATES = pyautogui.size()
 
+    data = open(DATA_FILE_NAME, 'a+')
+    summary = open(SUMMARY_FILE_NAME, 'a+')
+
     if os.path.getsize(DATA_FILE_NAME) > 0 or os.path.getsize(SUMMARY_FILE_NAME):
         print('ERROR: data or summary files for ' + FILE_NAME + ' are already written to. move or remove these files')
         return
 
-    data = open(DATA_FILE_NAME, 'w')
-    summary = open(SUMMARY_FILE_NAME, 'w')
     vid = cv2.VideoCapture(FILE_PATH)
     cv2.namedWindow(WINDOW_NAME, cv2.WND_PROP_FULLSCREEN)
     cv2.setWindowProperty(WINDOW_NAME, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
