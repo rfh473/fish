@@ -36,10 +36,9 @@ def main():
         if not ret:
             break
 
-        wait_key = cv2.waitKey(1)
-
         cv2.imshow(WINDOW_NAME, frame)
 
+        wait_key = cv2.waitKey(1)
         if wait_key & 0xFF == ord('q'):  # press q to quit
             break
         if wait_key == ord('p') or frame_index == 0: # press p to pause
