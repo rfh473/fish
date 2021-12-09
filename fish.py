@@ -16,13 +16,11 @@ def main():
         print('ERROR: file not found ' + FILE_PATH)
         return
 
-    data = open(DATA_FILE_NAME, 'a+')
-    summary = open(SUMMARY_FILE_NAME, 'a+')
+    data = open(DATA_FILE_NAME, 'w+')
+    summary = open(SUMMARY_FILE_NAME, 'w+')
 
     if os.path.getsize(DATA_FILE_NAME) > 0 or os.path.getsize(SUMMARY_FILE_NAME):
-        print('WARN: data or summary files for ' + FILE_NAME + ' are already written to. move or remove these files')
-        data.write('\n')
-        summary.write('\n')
+        print('WARN: data or summary files for ' + FILE_NAME + ' are already written to, will be overwritten')
 
     vid = cv2.VideoCapture(FILE_PATH)
     cv2.namedWindow(WINDOW_NAME, cv2.WND_PROP_FULLSCREEN)
@@ -38,7 +36,15 @@ def main():
         if not ret:
             break
 
+        wait_key = cv2.waitKey(1)
+
         cv2.imshow(WINDOW_NAME, frame)
+
+        if wait_key & 0xFF == ord('q'):  # press q to quit
+            break
+        if wait_key == ord('p') or frame_index == 0: # press p to pause
+            cv2.waitKey(-1)
+
         if frame_index % UNDERSAMPLING_FACTOR == 0:
             x = pyautogui.position().x / MAX_COORDINATES.width
             y = pyautogui.position().y / MAX_COORDINATES.height
@@ -51,9 +57,6 @@ def main():
             print('x: ' + str(x), 'y: ' + str(y))
 
         frame_index += 1
-
-        if cv2.waitKey(1) & 0xFF == ord('q'):  # press q to quit
-            break
 
     avg_x_coordinate = sum(x_coordinates) / len(x_coordinates)
     avg_y_coordinate = sum(y_coordinates) / len(y_coordinates)
