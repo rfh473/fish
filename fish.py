@@ -1,9 +1,12 @@
-import click
-import pyautogui
-import cv2
-import os
+import pyautogui, cv2, os
 from time import sleep
 
+FILE_DIRECTORY = 'C:\\Users\\ryanh\\Downloads'
+FILE_NAME = '4_by_3.mp4'
+
+FILE_PATH = FILE_DIRECTORY + '\\' + FILE_NAME
+FILE_NAME_PREFIX = FILE_NAME.split('.')[0]
+DATA_FILE_NAME = FILE_NAME_PREFIX + '_data' + '.csv'
 WINDOW_NAME = 'fish'
 MAX_COORDINATES = pyautogui.size()
 
@@ -11,24 +14,18 @@ UNDERSAMPLING_FACTOR = 4
 FPS = 48
 REWIND_FRAME_COUNT = 120
 
-@click.command()
-@click.argument('file', type=click.File('rb'))
-def main(file):
-    filename = file.name
 
-    filename_prefix = filename.split('.')[0]
-    data_filename = filename_prefix + '_data' + '.csv'
-
-    if not os.path.isfile(filename):
-        print(f'ERROR: file not found {filename}')
+def main():
+    if not os.path.isfile(FILE_PATH):
+        print('ERROR: file not found ' + FILE_PATH)
         return
 
-    data_file = open(data_filename, 'w+')
+    data_file = open(DATA_FILE_NAME, 'w+')
 
-    if os.path.getsize(data_filename) > 0:
-        print(f'WARN: data file for input video is already written to, will be overwritten ({data_filename})')
+    if os.path.getsize(DATA_FILE_NAME) > 0:
+        print('WARN: data file for ' + FILE_NAME + ' is already written to, will be overwritten')
 
-    vid = cv2.VideoCapture(filename)
+    vid = cv2.VideoCapture(FILE_PATH)
     cv2.namedWindow(WINDOW_NAME, cv2.WND_PROP_FULLSCREEN)
     cv2.setWindowProperty(WINDOW_NAME, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
@@ -79,7 +76,7 @@ def write_data(data_file, data_array, undersampling_factor):
         if i % undersampling_factor == 0:
             data_file.write(str(data_point.get('x')) + ', ' + str(data_point.get('y')) + '\n')
 
-    data_file.close()
+    data_file.close
 
 
 if __name__ == '__main__':
