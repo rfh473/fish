@@ -1,2 +1,3 @@
 opencv-python==4.*
 PyAutoGUI==0.9.*
+click==8.*
