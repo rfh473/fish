@@ -30,12 +30,16 @@ def main():
     cv2.setWindowProperty(WINDOW_NAME, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
     coordinates = []
-    frames = get_frames(vid)
 
     i = 0
-    while i < len(frames):
+    while True:
+        frame_success, frame = vid.read()
+
+        if not frame_success:
+            break
+
         sleep(1/FPS)
-        cv2.imshow(WINDOW_NAME, frames[i])
+        cv2.imshow(WINDOW_NAME, frame)
         wait_key = cv2.waitKey(1)
 
         if wait_key & 0xFF == ord('q'):  # press q to quit
@@ -46,15 +50,23 @@ def main():
 
         if wait_key == ord('b'): # press b to rewind vid and data
             i = max(0, i - REWIND_FRAME_COUNT)
+
             vid.set(cv2.CAP_PROP_POS_FRAMES, i)
             coordinates = coordinates[:i]
-            cv2.imshow(WINDOW_NAME, frames[i])
+
+            frame_success, frame = vid.read()
+
+            if not frame_success:
+                break
+            
+            cv2.imshow(WINDOW_NAME, frame)
+            cv2.waitKey(-1)
 
         x = pyautogui.position().x / MAX_COORDINATES.width
         y = pyautogui.position().y / MAX_COORDINATES.height
         coordinates.append({'x': x, 'y': y})
 
-        i = i+1
+        i += 1
 
     write_data(data_file, coordinates, UNDERSAMPLING_FACTOR)
 
@@ -65,19 +77,6 @@ def write_data(data_file, data_array, undersampling_factor):
             data_file.write(str(data_point.get('x')) + ', ' + str(data_point.get('y')) + '\n')
 
     data_file.close
-
-
-def get_frames(video):
-    frames = []
-
-    while True:
-        frame_success, frame = video.read()
-        if frame_success:
-            frames.append(frame)
-        else:
-            break
-
-    return frames
 
 
 if __name__ == '__main__':
